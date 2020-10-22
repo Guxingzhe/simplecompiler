@@ -18,32 +18,14 @@
 #include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/ExecutionEngine/GenericValue.h>
 #include <llvm/Support/raw_ostream.h>
-using namespace std;
-using namespace llvm;
 
 #include "ast.hpp"
 
-class CodeGenBlock {
-public:
-    BasicBlock *block;
-    Value *returnValue;
-    std::map<std::string, Value*> locals;
-};
+using namespace std;
+using namespace llvm;
 
-class CodeGenContext {
-    std::stack<CodeGenBlock *> blocks;
-    Function *mainFunction;
-
-public:
-    Module *module;
-    CodeGenContext() { module = new Module("main", getGlobalContext()); }
-    
-    void generateCode(Module& root);
-    GenericValue runCode();
-    std::map<std::string, Value*>& locals() { return blocks.top()->locals; }
-    BasicBlock *currentBlock() { return blocks.top()->block; }
-    void pushBlock(BasicBlock *block) { blocks.push(new CodeGenBlock()); blocks.top()->returnValue = NULL; blocks.top()->block = block; }
-    void popBlock() { CodeGenBlock *top = blocks.top(); blocks.pop(); delete top; }
-    void setCurrentReturnValue(Value *value) { blocks.top()->returnValue = value; }
-    Value* getCurrentReturnValue() { return blocks.top()->returnValue; }
-};
+/* LLVM 模块和上下文环境 */
+static LLVMContext context; //提供了一个用来创建变量等对象的上下文环境。
+static Module module("top", context); //LLVM IR 对象的顶级容器。
+static IRBuilder<> builder(context); //创建 LLVM 指令并将指令插入基础块的类。
+static std::map<std::string, Value*> namedValues;//键值表保存当前的代码范围内定义的值和记录

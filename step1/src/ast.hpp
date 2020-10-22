@@ -1,57 +1,55 @@
 /* 抽象语法树（Abstract Syntax Tree）定义 */
+/* 仅定义抽象语法树的节点类，Ast树通过Bison自动生成 */
 
 #include <string>
 #include <iostream>
 #include <vector>
 #include <llvm/IR/Value.h>
 
-class CodeGenContext;
-
 class Node;
-typedef std::vector<Node*> NodeList;
+typedef std::vector<Node*> Nodes;
 
 class Node {
 public:
 	virtual ~Node() {}
-	virtual llvm::Value* codeGen(CodeGenContext& context) { return NULL; }
+	virtual llvm::Value* codegen() = 0; //{ return NULL; }
 };
 
-class Module: public Node {
+class NodeList: public Node {
 public:
-	NodeList nodes;
-	Module() { }
-	virtual llvm::Value* codeGen(CodeGenContext& context);
-};
-
-class NIdentifier : public Node {
-public:
-	std::string name;
-	NIdentifier(const std::string& name) : name(name) { }
-	virtual llvm::Value* codeGen(CodeGenContext& context);
+	Nodes nodes;
+	NodeList() { }
+	llvm::Value *codegen() override;
 };
 
 class NInteger : public Node {
 public:
 	long long value;
 	NInteger(long long value) : value(value) { }
-	virtual llvm::Value* codeGen(CodeGenContext& context);
+	llvm::Value *codegen() override;
 };
 
-class NAssignment : public Node {
+class NIdentifier : public Node {
 public:
-	NIdentifier& lhs;
-	Node& rhs;
-	NAssignment(NIdentifier& lhs, Node& rhs) : 
-		lhs(lhs), rhs(rhs) { }
-	virtual llvm::Value* codeGen(CodeGenContext& context);
+	std::string name;
+	NIdentifier(const std::string& name) : name(name) { }
+    const std::string &getName() const { return name; }
+	llvm::Value *codegen() override;
 };
 
-class NBinaryOperator : public Node {
+class NBinaryOperate : public Node {
 public:
 	int op;
 	Node& lhs;
 	Node& rhs;
-	NBinaryOperator(Node& lhs, int op, Node& rhs) :
-		lhs(lhs), rhs(rhs), op(op) { }
-	virtual llvm::Value* codeGen(CodeGenContext& context);
+	NBinaryOperate(Node& lhs, int op, Node& rhs):lhs(lhs), rhs(rhs), op(op) { }
+	llvm::Value *codegen() override;
+};
+
+class NAssignment : public Node {
+public:
+	Node& lhs;
+	Node& rhs;
+	NAssignment(Node& lhs, Node& rhs): lhs(lhs), rhs(rhs) { }
+	llvm::Value *codegen() override;
 };

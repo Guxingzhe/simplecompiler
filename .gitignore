@@ -1,4 +1,9 @@
-build/*
+build
+objs
+*.bc
+*.s
+*.swp
+compiler
 
 # Prerequisites
 *.d

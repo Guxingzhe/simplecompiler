@@ -14,7 +14,7 @@
 %option noyywrap
 
 %%
-[0-9]+ { SAVE_TOKEN; return INT; }
+[0-9]+ { SAVE_TOKEN; return INTEGER; }
 [a-zA-Z] { SAVE_TOKEN; return IDENTIFIER; }
 "=" { return TOKEN(ASSIGN); }
 "+" { return TOKEN(ADD); }

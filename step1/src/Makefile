@@ -1,30 +1,32 @@
-all: copy compiler
+all: initdir compiler
+.PHONY: clean
 
-LLVMCONFIG = llvm-config
-CPPFLAGS = `$(LLVMCONFIG) --cppflags` # -std=c++14
-LDFLAGS = `$(LLVMCONFIG) --ldflags` -lpthread -ldl -lz -lncurses -rdynamic
-LIBS = `$(LLVMCONFIG) --libs`
+CXX = clang++
+CPPFLAGS = `llvm-config --cppflags`
+LINKFLAGS = `llvm-config --ldflags --libs`
 
 BUILDDIR = ../build/
 OBJDIR = $(BUILDDIR)objs/
+OBJS = $(OBJDIR)lexer.o $(OBJDIR)parser.o $(OBJDIR)irgen.o $(OBJDIR)compiler.o
 
-OBJS = $(OBJDIR)parser.o $(OBJDIR)irgen.o $(OBJDIR)lexer.o $(OBJDIR)irgen.o $(OBJDIR)compiler.o
-
-%.cpp: lexer.l parser.y
-	bison -d -o $(BUILDDIR)parser.cpp parser.y
-	flex -o $(BUILDDIR)lexer.cpp lexer.l
-
-copy:
-	mkdir -p ../build/objs
+initdir:
+	@mkdir -p ../build
+	@mkdir -p ../build/objs
+	
+$(BUILDDIR)%.cpp: lexer.l
 	cp ast.hpp $(BUILDDIR)ast.hpp
 	cp irgen.hpp $(BUILDDIR)irgen.hpp
+	cp irgen.cpp $(BUILDDIR)irgen.cpp
 	cp compiler.cpp $(BUILDDIR)compiler.cpp
+	flex -o $(BUILDDIR)lexer.cpp lexer.l
+	bison -d -o $(BUILDDIR)parser.cpp parser.y
    
 $(OBJDIR)%.o: $(BUILDDIR)%.cpp
-	g++ -c $(CPPFLAGS) -o $@ $<
-    
+	$(CXX) -c $(CPPFLAGS) -o $@ $<
+
 compiler: $(OBJS)
-	g++ -o $@ $<  $(LIBS) $(LDFLAGS)
+	$(CXX) $(LINKFLAGS) -o $@ $^
 
 clean:
 	rm -rf ../build/*
+	rm -f compiler
