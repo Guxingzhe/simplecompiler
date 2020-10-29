@@ -28,10 +28,10 @@ int main(){
     Value* const1 = builder.getInt32(1);
     // 变量
     AllocaInst* alloc_a = builder.CreateAlloca(builder.getInt32Ty(), NULL, "a");
-    //alloc_a->setAlignment(MaybeAlign(4));
+    alloc_a->setAlignment(MaybeAlign(4));
 
     StoreInst* store_a = builder.CreateStore(const1, alloc_a, false);
-    //store_a->setAlignment(MaybeAlign(4));
+    store_a->setAlignment(MaybeAlign(4));
 
     LoadInst* a = builder.CreateLoad(alloc_a);
 

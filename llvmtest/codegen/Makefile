@@ -6,14 +6,18 @@
 .PHONY: all build clean
 all: build
 
+BUILDDIR = build/
 SRC := $(wildcard *.cpp)
-OBJ := $(SRC:.cpp=)
+OBJ := $(patsubst %.cpp, $(BUILDDIR)%_bin, $(SRC))
 
-build: $(OBJ) 
+build: $(BUILDDIR) $(OBJ)
 
-%: %.cpp
+$(BUILDDIR):
+	@mkdir -p $@
+
+$(BUILDDIR)%_bin: %.cpp
 	@#`llvm-config --system-libs core`
 	clang++ `llvm-config --cxxflags --ldflags --libs` -o $@ $<
     
 clean:
-	rm -f $(OBJ) *.o
+	rm -rf $(BUILDDIR) 

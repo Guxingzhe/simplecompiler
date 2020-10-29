@@ -1,0 +1,27 @@
+/* sample1-1: 字数统计 */
+/* 类似Unix的wc程序 */
+
+%{
+int chars = 0;
+int words = 0;
+int lines = 0;
+%}
+
+%%
+\r|\n|\r\n { lines++; chars++;}
+[^ \t\n\r\f\v]+ { words++; chars += strlen(yytext);}
+. {chars++;}
+%%
+
+int main(int argc, char **argv)
+{
+  if(argc >1){
+    yyin = fopen(argv[1],"r"); /* 赋值给yyin的文件句柄，词法分析器将自动读入 */
+    if(!yyin){
+      perror(argv[1]);
+      return(1);
+      }
+  }
+  yylex();
+  printf("result:%d chars%8d words%8d lines\n",chars, words, lines);
+}

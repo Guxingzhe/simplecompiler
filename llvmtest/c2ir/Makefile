@@ -4,7 +4,7 @@
 ## date        : 2020.10.20                                                  ##
 ###############################################################################
 
-.PHONY : all ir bc asm opt clean
+.PHONY : all ir bc asm bin opt clean
 all: ir
 
 CC      = clang
@@ -15,17 +15,22 @@ OBJDIR = objs/
 SRC    := $(wildcard *.c)
 ## all .ll based on all .c
 IR     := $(SRC:.c=.ll)
-BC     := $(OBJDIR)$(SRC:.c=.bc)
-ASM    := $(SRC:.c=.s)
+BC     := $(patsubst %.c,$(OBJDIR)%.bc,$(SRC))
+ASM    := $(patsubst %.c,$(OBJDIR)%.s,$(SRC))
+BIN    := $(patsubst %.c,$(OBJDIR)%_bin,$(SRC))
 
 
 ir: $(IR)
 bc: $(OBJDIR) $(BC)
-asm: $(OBJDIR) $(ASM)
+asm: $(OBJDIR) $(ASM) $(BC)
+bin: $(BUILDDIR) $(BIN)
 
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)
+    
+$(BUILDDIR):
+	@mkdir -p $(BUILDDIR)
 
 %.ll: %.c
 	$(CC) -S -emit-llvm $< -o $@  
@@ -33,7 +38,7 @@ $(OBJDIR):
 $(OBJDIR)%.bc: %.ll
 	llvm-as $< -o $@
 
-%.s: $(OBJDIR)%.bc
+$(OBJDIR)%.s: $(OBJDIR)%.bc
 	llc $< -o $@
     
 opt:
@@ -41,5 +46,8 @@ opt:
 		opt -dce -globaldce -deadargelim -S $$name -o $$name; \
 	done
 
+$(BUILDDIR)_bin%: $(OBJDIR)%.s
+	clang $< -o $@
+
 clean:
-	@$(RM) $(OBJDIR) $(IR) *.bc *.s
+	$(RM) $(IR) $(OBJDIR)

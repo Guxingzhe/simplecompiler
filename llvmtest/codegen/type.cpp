@@ -53,6 +53,21 @@ int main(){
 	type1 = Type::getLabelTy(context);// labels
 	type1 = Type::getMetadataTy(context);// metadata
 	type1 = Type::getTokenTy(context); // Tokens
+	
+	//使用builder
+	type1 = builder.getVoidTy(); // Type* type1
+	
+	type1 = builder.getInt1Ty(); // IntegerType* type1
+	type1 = builder.getInt8Ty(); // IntegerType* type1
+	type1 = builder.getInt16Ty(); // IntegerType* type1
+	type1 = builder.getInt32Ty(); // IntegerType* type1
+	type1 = builder.getInt64Ty(); // IntegerType* type1
+	type1 = builder.getInt128Ty(); // IntegerType* type1
+	type1 = builder.getIntNTy(32); // IntegerType* type1
+	
+	type1 = builder.getHalfTy(); // Type* type1
+	type1 = builder.getFloatTy(); // Type* type1
+	type1 = builder.getDoubleTy(); // Type* type1
 	// DerivedTypes
 	//Interger
 	type1 = IntegerType::get(context, 32); // IntegerType* type1;

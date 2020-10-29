@@ -5,36 +5,37 @@
 #include <iostream>
 #include <vector>
 #include <llvm/IR/Value.h>
+#include <llvm/IR/IRBuilder.h>
 
-class Node;
-typedef std::vector<Node*> Nodes;
+using namespace llvm;
+
+typedef IRBuilder<> Builder;
 
 class Node {
 public:
 	virtual ~Node() {}
-	virtual llvm::Value* codegen() = 0; //{ return NULL; }
+	virtual llvm::Value* codegen(Builder builder) = 0; //{ return NULL; }//通过llvm api创建IR最常用的方法就是调用IRBuilder
 };
 
-class NodeList: public Node {
+class NBlock: public Node {
 public:
-	Nodes nodes;
-	NodeList() { }
-	llvm::Value *codegen() override;
+	std::vector<Node*> nodes;
+	NBlock() { }
+	llvm::Value* codegen(Builder builder) override;
 };
 
 class NInteger : public Node {
 public:
 	long long value;
 	NInteger(long long value) : value(value) { }
-	llvm::Value *codegen() override;
+	llvm::Value* codegen(Builder builder) override;
 };
 
 class NIdentifier : public Node {
 public:
 	std::string name;
 	NIdentifier(const std::string& name) : name(name) { }
-    const std::string &getName() const { return name; }
-	llvm::Value *codegen() override;
+	llvm::Value* codegen(Builder builder) override;
 };
 
 class NBinaryOperate : public Node {
@@ -43,13 +44,13 @@ public:
 	Node& lhs;
 	Node& rhs;
 	NBinaryOperate(Node& lhs, int op, Node& rhs):lhs(lhs), rhs(rhs), op(op) { }
-	llvm::Value *codegen() override;
+	llvm::Value* codegen(Builder builder) override;
 };
 
 class NAssignment : public Node {
 public:
-	Node& lhs;
+	NIdentifier& lhs;
 	Node& rhs;
-	NAssignment(Node& lhs, Node& rhs): lhs(lhs), rhs(rhs) { }
-	llvm::Value *codegen() override;
+	NAssignment(NIdentifier& lhs, Node& rhs): lhs(lhs), rhs(rhs) { }
+	llvm::Value* codegen(Builder builder) override;
 };

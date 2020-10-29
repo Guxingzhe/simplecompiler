@@ -1,39 +1,41 @@
-###############################################################################
-## file        : makefile for generate ir assembly code for current dir .c   ##
-## author      : lileilei                                                    ##
-## date        : 2020.10.20                                                  ##
-###############################################################################
+#############################################################################
+## file        : makefile for generate ir assembly code for current dir .c ##
+## author      : lileilei                                                  ##
+## date        : 2020.10.20                                                ##
+#############################################################################
+
+.PHONY: all asm opt bin clean
+all: bin
 
 RM      = rm -rf
-
+## cache dir
 OBJDIR = objs/
+BUILDDIR = build/
 ## get all source files
 SRC    := $(wildcard *.ll)
-OPT    := $(SRC:.ll=.opt)
-BC     := $(SRC:.ll=.bc)    
-BIN    := $(SRC:.ll=)
-ASM    := $(SRC:.ll=.s)
+## 
+OPT    := $(patsubst %.ll, $(OBJDIR)%.ll, $(SRC))
+BIN    := $(patsubst %.ll, $(BUILDDIR)%_bin, $(SRC))
+ASM    := $(patsubst %.ll, $(OBJDIR)%.s, $(SRC))
 
-
-build: $(OBJDIR) $(BIN)
 asm: $(OBJDIR) $(ASM)
-opt: $(OPT)
+opt: $(OBJDIR) $(OPT)
+bin: $(BUILDDIR) $(OBJDIR) $(BIN)
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)
+    
+$(BUILDDIR):
+	@mkdir -p $(BUILDDIR)
 
-%.opt:%.ll
+$(OBJDIR)%.ll:%.ll
 	opt -dce -globaldce -deadargelim -S $< -o $@
     
-$(OBJDIR)%.bc: %.ll
-	llvm-as $< -o $@
+$(OBJDIR)%.s: %.ll
+	llc -filetype=asm $< -o $@
     
-%.s: $(OBJDIR)%.bc
-	llc $< -o $@
-    
-%: %.s
+$(BUILDDIR)%_bin: $(OBJDIR)%.s
 	clang $< -o $@
     
-
 clean:
-	@$(RM) $(OBJDIR) $(BIN) *.s *.opt *.bc a.out
+	@$(RM) $(OBJDIR) $(BUILDDIR) *.o *.out

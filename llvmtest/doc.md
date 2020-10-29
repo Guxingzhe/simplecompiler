@@ -5,6 +5,8 @@
 1. 使用llvm提供的c接口来生成IR
 2. 使用IRBuilder生成IR
 
+IRBuilder是对C接口指令类的封装，用2生成module、function等，用到指令就用IRBuilder。
+
 # 生成llvm IR的llvm API核心类及流程
 
 
