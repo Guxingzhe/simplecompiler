@@ -2,7 +2,7 @@ all: initdir compiler
 .PHONY: clean
 
 CXX = clang++
-CPPFLAGS = `llvm-config --cppflags` -g
+CPPFLAGS = `llvm-config --cppflags` 
 LINKFLAGS = `llvm-config --ldflags --libs`
 
 BUILDDIR = ../build/
