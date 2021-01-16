@@ -41,3 +41,5 @@ compiler:  $(SRC) $(OBJS)
 clean:
 	rm -rf ../build/*
 	rm -f compiler
+	rm -f *.o
+	rm -f program a.out
