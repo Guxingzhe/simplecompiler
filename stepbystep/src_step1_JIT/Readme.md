@@ -1,4 +1,4 @@
-flex，bison，llvm实现简单解释器。
+flex，bison，llvm实现简单JIT解释器。
 
 ## 实现功能
 
@@ -23,17 +23,17 @@ make clean
 make
 ~~~
 
-生成的 JIT 文件就是解释器。
+生成的 jit 文件就是解释器。
 
 
 ## 解释器运行
 
-编译完成后运行`./JIT`命令，根据提示输入加减运算，将显示IR代码及运算结果。
+编译完成后运行`./jit`命令，根据提示输入加减运算，将显示IR代码及运算结果。
 
 示例如下：
 
 ~~~
-$ ./JIT
+$ ./jit
 
 Please input the expr:
 5+5+5
@@ -42,8 +42,8 @@ Running code:
 Generating code...
 Code is generated.
 Printing IR code...
-; ModuleID = 'JITcalc'
-source_filename = "JITcalc"
+; ModuleID = 'jitcalc'
+source_filename = "jitcalc"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 
 @0 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
