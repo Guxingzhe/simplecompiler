@@ -3,17 +3,14 @@
 %{
 #include <string>
 #include "ast.hpp"
-NBlock* root; /* the top level root node of AST */
+Node* stmt; 
 
 extern int yylex();
-void yyerror(const char* s);
+extern void runcode();
+void yyerror(const char* s) { std::printf("Error: %s\n", s); std::exit(1);}
 %}
 
 
-/* 将yylval定义为union数据类型，union成员和%uion内部声明相同。
-   在flex源码中，可以通过yylval.string形式存储token的值。
-   用yylval联合内的成员名称，可以通过%type指令为语法规则指定数据类型
-*/
 %union {
     NBlock* block;
     Node* node;
@@ -26,25 +23,24 @@ void yyerror(const char* s);
 %token <string> IDENTIFIER INTEGER
 %token <token> ADD SUB MUL DIV ASSIGN EOL
 /* 定义语法规则数据类型，与union中的变量名对应 */
-%type <block> program stmts
+%type <block> stmts
 %type <node> stmt expr term
 %type <ident> ident
-/*%start program*/
+/*%start stmts*/
 
 %left ADD SUB
 %left MUL DIV
 
-%%
-program: stmts { root = $1;}
 
-stmts:
-  stmt { $$ = new NBlock(); $$->nodes.push_back($1);}
-| stmts stmt { $1->nodes.push_back($2); }
+%%
+stmts: stmt
+| stmts stmt
+| stmts "exit" {return 0;}
 ;
 
 stmt:
-  ident ASSIGN expr EOL { $$ = new NAssignment(*$1, *$3); printf(">");}
-| expr EOL {$$ = $1; printf(">");}
+  ident ASSIGN expr EOL { $$ = new NAssignment(*$1, *$3); stmt=$$; runcode();}
+| expr EOL {$$ = $1; stmt=$$; runcode();}
 ;
 
 expr:
@@ -63,10 +59,5 @@ term:
 ident:
   IDENTIFIER { $$ = new NIdentifier(*$1); delete $1;}
 ;
-  
-
-;
 %%
 
-
-void yyerror(const char* s) { std::printf("Error: %s\n", s); std::exit(1);}

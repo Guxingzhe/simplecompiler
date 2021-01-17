@@ -2,7 +2,7 @@
 #include "irgen.hpp"
 
 extern int yyparse();
-extern NBlock* root;
+extern NBlock* astroot;
 
 /* LLVM 模块和上下文环境 */
 LLVMContext context; //提供了一个用来创建变量等对象的上下文环境。
@@ -23,7 +23,7 @@ Function* get_func() {
     
     /* gen ir code */
     std::cout << "Generating code...\n" ;
-    Value* val = root->codegen(builder); /* emit bytecode for the toplevel block */
+    Value* val = astroot->codegen(builder); /* emit bytecode for the toplevel block */
     
     //先声明printf函数
     FunctionType *printFuncType = FunctionType::get(builder.getInt32Ty(), true);

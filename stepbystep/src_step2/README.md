@@ -1,5 +1,9 @@
 ## 简介
-基于flex，bison，llvm实现一个最简单的编译器(JIT版)。
+基于flex，bison，llvm实现一个最简单的编译器。包括：
+
++ REPL交互环境(interpreter，交互式运行(暂时还有问题))
++ JIT解释器(JIT，解释运行)
++ 编译器(compiler，编译为目标代码，用系统链接器链接)
 
 ## 功能
 
@@ -18,7 +22,15 @@
 
 > 为方便检查结果，默认打印最后一个表达式计算值
 
-## 源文件说明
+## 实现过程
+
++ 词法分析（flex）
++ 语法分析（bison）
++ 生成抽象语法树AST（bison，C++）
++ 生成IR代码（llvm api）
++ 编译IR代码形成编译器
+
+### 源文件说明
 
 + lexer.l: Flex源文件，用于词法分析，识别源代码输出token。
 + parer.y: Bison源文件，用于语法分析，根据token输出抽象语法树。
@@ -27,8 +39,31 @@
 + jit.cpp：编译器主程序（把ir包装到一个函数里，创建JIT引擎调用函数)。
 + sample：文件夹内包含示例
 
-## 示例
+## 编译编译器
 
+运行make clean清除上次编译的中间文件。运行make编译生成编译器。
+
+~~~
+make clean
+make
+~~~
+
+生成的 `interpreter`,`jit`,`compiler` 就是编译器执行文件。
+
+## 编译运行程序
+
+### 交互式运行
+
+编译完成后运行`./interpreter`命令，根据提示输入加减运算，将显示IR代码及运算结果。
+
+示例如下：
+
+~~~
+$ ./interpreter
+~~~
+
+
+### jit解释运行
 
 ~~~
 $ ./jit
@@ -76,4 +111,37 @@ Running code:
 6
 Exiting...
 
+~~~
+
+### 编译程序，运行目标程序
+
+#### 编译目标程序
+
++ 运行`./compiler`命令，根据提示输入加减运算，将程序编译为program.o。
++ 运行`cc program.o -o program`，生成目标程序文件program
+
+示例如下：
+
+~~~
+$ ./compiler
+
+Please input the expr:
+a=3
+b=5
+a+b-2
+
+Generating code...
+Code is generated.
+Wrote program.o
+
+$ cc program.o -o program
+~~~
+
+#### 运行目标程序
+
+运行`./program`命令即可输出目标程序计算结果。
+
+~~~
+$ ./program
+6
 ~~~
