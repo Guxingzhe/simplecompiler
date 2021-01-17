@@ -1,7 +1,5 @@
 /* 由AST生成IR的代码 */
 
-//#include <stack>
-//#include <typeinfo>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Function.h>
@@ -19,7 +17,7 @@
 #include <llvm/ExecutionEngine/GenericValue.h>
 #include <llvm/Support/raw_ostream.h>
 
-#include "ast.hpp"
+#include "../AST/ast.hpp"
 
 using namespace std;
 using namespace llvm;

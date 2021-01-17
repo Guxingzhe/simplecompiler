@@ -2,8 +2,8 @@
 
 %{
 #include <string>
-#include "ast.hpp"
-NBlock* root; /* the top level root node of AST */
+#include "../../AST/ast.hpp"
+NBlock* astroot; /* the top level root node of AST */
 
 extern int yylex();
 void yyerror(const char* s);
@@ -35,7 +35,7 @@ void yyerror(const char* s);
 %left MUL DIV
 
 %%
-program: stmts { root = $1;}
+program: stmts { astroot = $1;}
 
 stmts:
   stmt { $$ = new NBlock(); $$->nodes.push_back($1);}

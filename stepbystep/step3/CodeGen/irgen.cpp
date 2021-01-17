@@ -1,6 +1,6 @@
 /* 由AST生成IR的代码 */
 #include "irgen.hpp"
-#include "parser.hpp"
+#include "../Parse/cpp/parser.hpp"
 #include <string> //for cout <<
 
 std::map<std::string, AllocaInst*> namedValues;//键值表保存当前的代码范围内定义的值和记录

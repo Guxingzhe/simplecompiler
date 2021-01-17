@@ -1,8 +1,8 @@
 /* 词法分析源码 */
 
 %{
-#include "ast.hpp"  //parser.hpp需要ast.hpp内的定义
-#include "parser.hpp"// parser.hpp是bison编译parser.y生成的头文件，内含token声明和yylval声明。
+#include "../../AST/ast.hpp"  //parser.hpp需要ast.hpp内的定义
+#include "../../Parse/cpp/parser.hpp"// parser.hpp是bison编译parser.y生成的头文件，内含token声明和yylval声明。
 
 #define TOKEN_WITHVAL(t)  yylval.string = new std::string(yytext, yyleng);return t; 
 #define TOKEN(t)    yylval.token = t;return t;
